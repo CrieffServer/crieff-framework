@@ -26,7 +26,7 @@ import java.util.Date;
 public class JwtUtil {
 
 
-    @Value("${token.expireTime}")
+    @Value("${token.expireTime:86400}")
     private Long expireTime;
 
 
