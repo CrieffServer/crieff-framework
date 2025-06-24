@@ -7,7 +7,7 @@ import com.crieff.framework.auth.common.utils.JwtUtil;
 import com.crieff.framework.auth.model.LoginUser;
 import com.crieff.framework.exception.BasicErrorCode;
 import com.crieff.framework.exception.BizException;
-import com.crieff.framework.redis.RedisUtil;
+import com.crieff.framework.redis.RedisHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +37,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Resource
     private JwtUtil jwtUtil;
     @Resource
-    private RedisUtil redisUtil;
+    private RedisHelper redisHelper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -59,7 +59,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         JwtContent content = jwtUtil.getTokenSubjectObject(token);
         //redis获取用户
-        String jsonData = (String) redisUtil.get(String.join(":", userTokenKey, String.valueOf(content.getUserId())));
+        String jsonData = (String) redisHelper.get(String.join(":", userTokenKey, String.valueOf(content.getUserId())));
         LoginUser userInfo = JSON.parseObject(jsonData, LoginUser.class);
 
         if (userInfo == null) {

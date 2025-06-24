@@ -1,177 +1,58 @@
+/*
+ * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ *
+ * For licensing information, please contact: https://www.cowave.com.
+ *
+ * This code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
 package com.crieff.framework.auth.common.utils;
 
-import com.crieff.framework.basic.utils.ContextMapHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.security.*;
-import java.util.Base64;
-
-import static java.lang.System.currentTimeMillis;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 
 /**
- * @description:
- * @author: JiaHao.Kuang
- * @create: 2019-12-16 15:51
- **/
+ * @author aKuang
+ * @description
+ * @date 2025/5/28 17:11
+ */
 @Slf4j
 public class AESUtil {
 
-    public static boolean initialized = false;
+    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    private static final int KEY_SIZE = 128; // 或者 192, 256
 
-    /**
-     * AES解密
-     * @param content 密文
-     */
-    public byte[] decrypt(byte[] content, byte[] keyByte, byte[] ivByte) {
-        initialize();
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            Key sKeySpec = new SecretKeySpec(keyByte, "AES");
-            cipher.init(Cipher.DECRYPT_MODE, sKeySpec, generateIV(ivByte));// 初始化
-            byte[] result = cipher.doFinal(content);
-            return result;
-        } catch (Exception e) {
-            log.error("AESUtil decrypt fail", e);
-        }
-        return null;
+    public static byte[] encrypt(String data, String key, byte[] iv) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+
+        byte[] encryptedBytes = cipher.doFinal(data.getBytes());
+        ByteBuffer buffer = ByteBuffer.allocate(iv.length + encryptedBytes.length);
+        buffer.put(iv);
+        buffer.put(encryptedBytes);
+
+        return buffer.array();
     }
 
-    public static void initialize() {
-        if (initialized)
-            return;
-        Security.addProvider(new BouncyCastleProvider());
-        initialized = true;
+    public static String decrypt(byte[] encryptedData, String key, byte[] iv) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        byte[] decryptedBytes = cipher.doFinal(encryptedData);
+        return new String(decryptedBytes);
     }
 
-    // 生成iv
-    public static AlgorithmParameters generateIV(byte[] iv) throws Exception {
-        AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
-        params.init(new IvParameterSpec(iv));
-        return params;
+    public static IvParameterSpec generateIV() {
+        byte[] iv = new byte[16]; // AES IV的长度固定为16字节
+        new SecureRandom().nextBytes(iv);
+        return new IvParameterSpec(iv);
     }
-
-    /**
-     * 加密
-     *
-     * @param content 待加密内容
-     * @return 加密后的密文 byte[]
-     */
-    public static String encryptAES(byte[] content) {
-        try {
-            String key = ContextMapHolder.getContextMap().get("AES_key");
-            if (StringUtils.isNotBlank(key))
-                return Base64Util.encode(encryptAES(content, strKey2SecretKey(key)));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-        return "";
-    }
-
-    /**
-     * 解密
-     *
-     * @param content 待解密内容
-     * @return 解密后的明文 byte[]
-     */
-    public static String decryptAES(byte[] content) {
-        try {
-            String key = ContextMapHolder.getContextMap().get("AES_key");
-            if (StringUtils.isNotBlank(key))
-                return new String(decryptAES(content, strKey2SecretKey(key)));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-        return "";
-    }
-
-
-    /**
-     * 加密
-     *
-     * @param content   待加密内容
-     * @param secretKey 加密使用的 AES 密钥
-     * @return 加密后的密文 byte[]
-     */
-    public static byte[] encryptAES(byte[] content, SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        return cipher.doFinal(content);
-    }
-
-    /**
-     * 解密
-     *
-     * @param content   待解密内容
-     * @param secretKey 解密使用的 AES 密钥
-     * @return 解密后的明文 byte[]
-     */
-    public static byte[] decryptAES(byte[] content, SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        return cipher.doFinal(content);
-    }
-
-    /**
-     * 获得一个 密钥长度为 256 位的 AES 密钥，
-     *
-     * @return 返回经 BASE64 处理之后的密钥字符串
-     */
-    public static String getStrKeyAES() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        SecureRandom secureRandom = new SecureRandom(String.valueOf(currentTimeMillis()).getBytes("utf-8"));
-        keyGen.init(128, secureRandom);   // 这里可以是 128、192、256、越大越安全
-        SecretKey secretKey = keyGen.generateKey();
-        return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-    }
-
-    /**
-     * 将使用 Base64 加密后的字符串类型的 secretKey 转为 SecretKey
-     *
-     * @param strKey
-     * @return SecretKey
-     */
-    public static SecretKey strKey2SecretKey(String strKey) {
-        byte[] bytes = Base64.getDecoder().decode(strKey);
-        SecretKeySpec secretKey = new SecretKeySpec(bytes, "AES");
-        return secretKey;
-    }
-
-    public static void main(String[] args) {
-        String content = "abcdefg789+-*+="; // 待加密的字符串
-        System.out.println("明文数据为：" + content);
-        try {
-            // 获得经 BASE64 处理之后的 AES 密钥œ
-            String strKeyAES = AESUtil.getStrKeyAES();
-            System.out.println("经BASE64处理之后的密钥：" + strKeyAES);
-
-            // 将 BASE64 处理之后的 AES 密钥转为 SecretKey
-            SecretKey secretKey = AESUtil.strKey2SecretKey(strKeyAES);
-
-            // 加密数据
-            byte[] encryptAESbytes = AESUtil.encryptAES(content.getBytes("utf-8"), secretKey);
-            System.out.println("加密后的数据经 BASE64 处理之后为：" + Base64Util.encode(encryptAESbytes));
-
-            // 解密数据
-            String decryptAESStr = new String(AESUtil.decryptAES(encryptAESbytes, secretKey), "utf-8");
-            System.out.println("解密后的数据为：" + decryptAESStr);
-            System.out.println();
-            if (content.equals(decryptAESStr)) {
-                System.out.println("测试通过！");
-            } else {
-                System.out.println("测试未通过！");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }

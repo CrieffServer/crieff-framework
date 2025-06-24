@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @description:
@@ -93,6 +94,26 @@ public class LoginUser implements UserDetails {
      * 描述
      */
     private String description;
+
+    /**
+     * 部门主键
+     */
+    private Long deptId;
+
+    /**
+     * 部门名称
+     */
+    private String deptName;
+
+    /**
+     * 角色列表
+     */
+    private Set<Long> roleIds;
+
+    /**
+     * 角色名称列表
+     */
+    private Set<String> roleNames;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

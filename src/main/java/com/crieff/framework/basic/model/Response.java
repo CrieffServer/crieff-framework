@@ -5,11 +5,14 @@ import com.crieff.framework.exception.BasicErrorCode;
 import com.crieff.framework.exception.BizException;
 import com.crieff.framework.exception.ErrorCode;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 /**
  * @description:
@@ -126,4 +129,39 @@ public class Response<T> {
         return new Response<>(msg, code, data);
     }
 
+
+    @Data
+    @Getter
+    @NoArgsConstructor
+    public static class Page<E> {
+        /**
+         * 总数
+         */
+        @Setter
+        private int total;
+
+        /**
+         * 列表数据
+         */
+        private Collection<E> list;
+
+        public Page(Collection<E> list, int total) {
+            this.list = list;
+            this.total = total;
+        }
+
+        public Page(Collection<E> list, long total) {
+            this.list = list;
+            this.total = (int) total;
+        }
+
+        public void setTotal(long total) {
+            this.total = (int) total;
+        }
+
+        @Override
+        public String toString() {
+            return "{total=" + total + ", list=" + list + "}";
+        }
+    }
 }
