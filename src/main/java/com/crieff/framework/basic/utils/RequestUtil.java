@@ -25,19 +25,12 @@ public class RequestUtil {
     /**
      * 获取当前用户名
      */
-    public static String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
+    public static String getCurrentUserName() {
+        LoginUser userDetail = getCurrentUser();
+        if (userDetail == null) {
+            return "";
         }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
-        } else if (principal instanceof String) {
-            return (String) principal;
-        }
-        return null;
+        return userDetail.getUsername();
     }
 
     /**

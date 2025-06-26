@@ -30,7 +30,7 @@ public class JwtUtil {
     private Long expireTime;
 
 
-    @Value("${token.secret}")
+    @Value("${token.secret:aB9lM7xWt8zR2uQv}")
     private String secret;
 
 
@@ -201,8 +201,8 @@ public class JwtUtil {
         }
         try {
             Thread.sleep(15000);//休眠15s，token一定过期，因为token有效期 是10s
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("", e);
         }
         flag = jwtUtil.isExpired(token);//token 是否有效？
         System.out.println("token是否过期" + flag);

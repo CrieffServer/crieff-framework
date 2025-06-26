@@ -2,14 +2,13 @@ package com.crieff.framework.auth.filter;
 
 
 import com.alibaba.fastjson2.JSON;
-import com.crieff.framework.auth.model.JwtContent;
 import com.crieff.framework.auth.common.utils.JwtUtil;
+import com.crieff.framework.auth.model.JwtContent;
 import com.crieff.framework.auth.model.LoginUser;
 import com.crieff.framework.exception.BasicErrorCode;
 import com.crieff.framework.exception.BizException;
 import com.crieff.framework.redis.RedisHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -32,8 +31,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     public static String userTokenKey = "crieff:system:user:";
 
-    @Value("${token.head}")
-    String authorization;
     @Resource
     private JwtUtil jwtUtil;
     @Resource

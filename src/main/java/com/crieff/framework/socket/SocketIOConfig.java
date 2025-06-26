@@ -15,22 +15,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SocketIOConfig {
 
-    @Value("${socketio.host}")
+    @Value("${socketio.host:127.0.0.1}")
     private String host;
-    @Value("${socketio.port}")
+    @Value("${socketio.port:10001}")
     private Integer port;
-    @Value("${socketio.bossCount}")
-    private int bossCount;
-    @Value("${socketio.workCount}")
-    private int workCount;
-    @Value("${socketio.allowCustomRequests}")
-    private boolean allowCustomRequests;
-    @Value("${socketio.upgradeTimeout}")
-    private int upgradeTimeout;
-    @Value("${socketio.pingTimeout}")
-    private int pingTimeout;
-    @Value("${socketio.pingInterval}")
-    private int pingInterval;
+    @Value("${socketio.bossCount:1}")
+    private Integer bossCount;
+    @Value("${socketio.workCount:10}")
+    private Integer workCount;
+    @Value("${socketio.allowCustomRequests:true}")
+    private Boolean allowCustomRequests;
+    @Value("${socketio.upgradeTimeout:3000}")
+    private Integer upgradeTimeout;
+    @Value("${socketio.pingTimeout:3000}")
+    private Integer pingTimeout;
+    @Value("${socketio.pingInterval:3000}")
+    private Integer pingInterval;
 
     @Bean
     public SocketIOServer socketIOServer() {
