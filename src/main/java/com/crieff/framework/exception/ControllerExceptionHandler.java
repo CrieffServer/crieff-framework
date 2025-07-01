@@ -2,13 +2,13 @@ package com.crieff.framework.exception;
 
 import com.crieff.framework.basic.model.Response;
 import com.crieff.framework.basic.utils.RequestUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Api接口统一异常处理

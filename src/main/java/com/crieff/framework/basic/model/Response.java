@@ -4,6 +4,7 @@ package com.crieff.framework.basic.model;
 import com.crieff.framework.exception.BasicErrorCode;
 import com.crieff.framework.exception.BizException;
 import com.crieff.framework.exception.ErrorCode;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**

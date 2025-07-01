@@ -1,6 +1,5 @@
 package com.crieff.framework.auth.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.crieff.framework.auth.common.enums.AccountStatus;
 import com.crieff.framework.auth.common.enums.Sex;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -64,6 +62,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 性别
+     *
      * @see Sex
      */
     private Integer sex;
@@ -86,12 +85,12 @@ public class LoginUser implements UserDetails {
     /**
      * 上次登录时间
      */
-    @TableField("last_login_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastLoginTime;
 
     /**
      * 账号状态
+     *
      * @see AccountStatus
      */
     private Integer status;
@@ -132,7 +131,7 @@ public class LoginUser implements UserDetails {
     private Set<String> permissionNames;
 
     /**
-     *  资源唯一标识列表
+     * 资源唯一标识列表
      */
     private Set<String> resourceUniqIds;
 

@@ -7,11 +7,11 @@
     <version>1.0-SNAPSHOT</version>
     <name>crieff-framework</name>
 
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.0</version>
-        <relativePath/>
+        <version>3.3.0</version> <!-- 使用最新稳定版 -->
     </parent>
 
     <dependencies>
@@ -25,7 +25,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
         <!--SpringBoot核心启动器，包含各种springboot的配置日志等-->
         <dependency>
@@ -37,10 +36,37 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <!-- Validation-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
         <!--spring security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- Spring Boot JDBC Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!-- MySQL 连接器，建议使用最新非漏洞版本-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.29</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.8</version>
+        </dependency>
+        <!-- dynamic datasource-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.6.1</version>
         </dependency>
         <!--redis-->
         <dependency>
@@ -64,33 +90,19 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        <!--apache base64-->
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
-            <version>1.46</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
         </dependency>
         <dependency>
             <groupId>com.corundumstudio.socketio</groupId>
             <artifactId>netty-socketio</artifactId>
             <version>2.0.3</version>
         </dependency>
-        <!--mybatis-plus-->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.1</version>
-        </dependency>
-        <!--mybatis-plus-extension-->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-extension</artifactId>
-            <version>3.5.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
     </dependencies>
 

@@ -18,6 +18,8 @@ public enum BasicErrorCode implements ErrorCode {
     DELETE_FAIL(34, "删除记录失败"),
     QUERY_TOO_FAST(35, "您的操作太频繁"),
     INTERFACE_DEPRECATED(40, "访问接口已废弃"),
+    INTERFACE_ACCESS_FAIL(41, "下游接口访问失败"),
+    ACCESS_DENY(51, "没有数据访问权限"),
     ;
 
     private final int code;
