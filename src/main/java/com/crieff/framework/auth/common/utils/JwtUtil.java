@@ -6,6 +6,7 @@ import com.crieff.framework.auth.model.JwtContent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
+
+import static com.crieff.framework.basic.constant.CrieffConstant.AES_SECRET;
+import static com.crieff.framework.basic.constant.CrieffConstant.BEARER_TOKEN_HEAD;
 
 /**
  * @description:
@@ -26,13 +32,8 @@ import java.util.Date;
 public class JwtUtil {
 
 
-    @Value("${token.expireTime:86400}")
+    @Value("${crieff.admin.token.expireTime:86400}")
     private Long expireTime;
-
-
-    @Value("${token.secret:aB9lM7xWt8zR2uQv}")
-    private String secret;
-
 
     /**
      * 构建 jwt token串
@@ -64,12 +65,14 @@ public class JwtUtil {
          * payload (base64后的)
          * secret 私钥
          */
+
+
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(JSON.toJSONString(jwtContent))
                 .setIssuedAt(nowDate)   //设置生成 token 的时间
                 .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(SignatureAlgorithm.HS512, AES_SECRET)
                 .compact();
     }
 
@@ -82,11 +85,11 @@ public class JwtUtil {
      */
     public Claims getClaimByToken(String token) {
         try {
-            if (StringUtils.startsWithIgnoreCase(token, "Bearer ")) {
+            if (StringUtils.startsWithIgnoreCase(token, BEARER_TOKEN_HEAD)) {
                 token = token.split(" ")[1];
             }
             return Jwts.parser()
-                    .setSigningKey(secret)
+                    .setSigningKey(AES_SECRET)
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
@@ -184,15 +187,21 @@ public class JwtUtil {
     }
 
     public static void main(String[] args) {
+        // 生成一个符合 HS512 要求的随机密钥
+        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        // 获取密钥的字节数组（可用于存储或传输）
+        byte[] keyBytes = key.getEncoded();
+        // 获取 Base64 编码的密钥（便于存储在配置文件或环境变量中）
+        String base64Key = Base64.getEncoder().encodeToString(keyBytes);
+        System.out.println("HS512 Secret Key (Base64): " + base64Key);
         JwtUtil jwtUtil = new JwtUtil();
         jwtUtil.expireTime = 10L;//10秒过期
-        jwtUtil.secret = "godNan";// 随便字符串  加密盐
         JwtContent content = new JwtContent();//自定义的实体类 用户信息 存储到jwt里
         content.setUserName("张三");
         String token = jwtUtil.generateToken(content);
         System.out.println("生成的token是" + token);
         boolean flag = jwtUtil.isExpired(token);//token 是否有效？
-        System.out.println("token是否过期" + flag);
+        System.out.println("token是否过期:" + flag);
 
         if (!flag) {
             //如果没有过期那我们获取里面的信息
@@ -205,6 +214,6 @@ public class JwtUtil {
             log.error("", e);
         }
         flag = jwtUtil.isExpired(token);//token 是否有效？
-        System.out.println("token是否过期" + flag);
+        System.out.println("token是否过期:" + flag);
     }
 }

@@ -1,12 +1,12 @@
 package com.crieff.framework.auth;
 
+import com.crieff.framework.auth.filter.AuthenticationSuccessFilter;
 import com.crieff.framework.auth.filter.JwtAuthenticationTokenFilter;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -40,10 +39,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 public class WebSecurityConfig {
 
     /**
-     * 认证成功结果处理器
-     */
-    private final AuthenticationSuccessHandler loginSuccessHandler;
-    /**
      * 认证失败结果处理器
      */
     private final AuthenticationEntryPoint loginFailureHandler;
@@ -59,14 +54,17 @@ public class WebSecurityConfig {
     @Resource
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
+    @Resource
+    private AuthenticationSuccessFilter authenticationSuccessFilter;
+
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        //将编写的UserDetailsService注入进来
+        // 将编写的UserDetailsService注入进来
         provider.setUserDetailsService(userDetailsService);
-        //  将使用的密码编译器加入进来
+        // 将使用的密码编译器加入进来
         provider.setPasswordEncoder(passwordEncoder);
-        //将provider放置到AuthenticationManager 中
+        // 将provider放置到AuthenticationManager 中
         return new ProviderManager(provider);
     }
 
@@ -112,13 +110,14 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(loginFailureHandler))
                 // 下面开始设置权限
                 .authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
-                        // 允许直接访问 授权登录接口
-                        .requestMatchers("/crieff/admin/access/control/**").permitAll()
+                        // 明确指定 login 路径
+                        .requestMatchers("/admin/access/control/login", "/admin/access/control/logout").permitAll()
                         // 允许任意请求被已登录用户访问，不检查Authority
                         .anyRequest().authenticated()
                 )
                 //  添加过滤器
-                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(authenticationSuccessFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 }

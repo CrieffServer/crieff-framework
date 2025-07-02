@@ -28,7 +28,7 @@ public class LoginUser implements UserDetails {
     /**
      * 用户序列号
      */
-    private Long userId;
+    private Long id;
 
     /**
      * 用户账号
@@ -106,6 +106,23 @@ public class LoginUser implements UserDetails {
     private Long deptId;
 
     /**
+     * 版本号
+     */
+    private Integer version;
+
+    /**
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
+
+    /**
      * 部门名称
      */
     private String deptName;
@@ -124,11 +141,6 @@ public class LoginUser implements UserDetails {
      * 用户权限列表
      */
     private Set<Long> permissionIds;
-
-    /**
-     * 权限名称列表
-     */
-    private Set<String> permissionNames;
 
     /**
      * 资源唯一标识列表
